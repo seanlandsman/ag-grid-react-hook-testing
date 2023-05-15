@@ -1,34 +1,31 @@
-import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
-import 'ag-grid-enterprise';
-import {AgGridReact} from 'ag-grid-react';
+import { AgGridReact } from 'ag-grid-react';
 
-const App = forwardRef(function (props, ref) {
-    const columnDefs = [
+const App = function (props) {
+    const columnDefs = useMemo(() => [
         {
             field: 'country',
-            rowGroup: true,
         },
         {
             field: 'year',
-            rowGroup: true,
         },
         {field: 'sport'},
         {field: 'athlete'},
         {field: 'total'},
-    ];
-    const defaultColDef = {
+    ], []);
+    const defaultColDef = useMemo(() => ({
         flex: 1,
         minWidth: 100,
         filter: true,
         sortable: true,
         resizable: true,
-    };
-    const [api, setApi] = useState(null);
-    const onGridReady = (params) => {
-        setApi(params.api);
-    };
+    }), []);
+
+    const [selectedCount, setSelectedCount] = useState(0);
     const [rowData, setRowData] = useState(null);
+
+    const gridRef = useRef(null);
     useEffect(() => {
         fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
             .then((resp) => resp.json())
@@ -38,25 +35,21 @@ const App = forwardRef(function (props, ref) {
     }, [])
 
     const handleSelectAll = () => {
-        api.selectAll();
+        gridRef.current.api.selectAll();
+        setSelectedCount(gridRef.current.api.getSelectedRows().length);
     };
 
     const handleDeselectAll = () => {
-        api.deselectAll();
+        gridRef.current.api.deselectAll();
+        setSelectedCount(gridRef.current.api.getSelectedRows().length);
     };
-
-    useImperativeHandle(ref, () => {
-        return {
-            getApi() {
-                return api;
-            }
-        }
-    });
+    const selectedCountTxt = "Selected Rows: " + selectedCount;
 
     return (
         <div>
             <button id="selectAll" onClick={handleSelectAll}>Select All Rows</button>
             <button id="deSelectAll" onClick={handleDeselectAll}>Deselect All Rows</button>
+            <div>{selectedCountTxt}</div>
             <div
                 className="ag-theme-balham"
                 style={{
@@ -64,15 +57,15 @@ const App = forwardRef(function (props, ref) {
                     width: '600px'
                 }}>
                 <AgGridReact
+                    ref={gridRef}
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
-                    enableRangeSelection={true}
+                    alwaysShowHorizontalScroll
                     animateRows={true}
-                    onGridReady={onGridReady}
                     rowData={rowData}
                 />
             </div>
         </div>
     );
-});
+};
 export default App;
