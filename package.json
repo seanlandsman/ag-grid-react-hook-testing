@@ -6,9 +6,9 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
-    "ag-grid-community": "^29.3.0",
-    "ag-grid-enterprise": "^29.3.0",
-    "ag-grid-react": "^29.3.0",
+    "ag-grid-community": "^30.0.0",
+    "ag-grid-enterprise": "^30.0.0",
+    "ag-grid-react": "^30.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -36,6 +36,11 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(@ag-grid-community|@ag-grid-enterprise|ag-grid-react|ag-grid-enterprise|ag-grid-community)/)"
     ]
   }
 }
